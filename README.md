@@ -2,7 +2,11 @@
 
 ## Overview
 
-Thit Domoticz plugin allow to communicate from Domoticz to Tailscale and monitor status of connection and devices.
+This Domoticz plugin allow to communicate from Domoticz to Tailscale and monitor status of connection and devices.
+It uses sommand bash wrapper to manage local tailscale application.
+
+## Prerequisites
+Sign Up for Tailscale and install client in same system Domoticz is running.
 
 ## Run
 

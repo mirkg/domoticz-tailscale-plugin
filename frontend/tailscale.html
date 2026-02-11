@@ -1,0 +1,109 @@
+<div id="plugin-view"></div>
+
+<link rel="stylesheet" href="/templates/tailscale/leaflet.css">
+
+<style>
+    .leaflet-container {
+        background-color: white;
+    }
+
+    .tailscale-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .btn-group {
+        text-align: center;
+    }
+
+    .tailscale-ace-editor {
+        height: calc(100vh - 270px);
+    }
+</style>
+
+<script type="text/ng-template" id="app/tailscale/index.html">
+    <div class="container">
+        <div class="tailscale-header">
+            <div>
+                <a class="btnstylerev" back-button>{{ ::'Back' | translate }}</a>
+            </div>
+
+            <div class="align-right" ng-if="$ctrl.controllerInfo && $ctrl.pluginInfo">
+                <div>{{ $ctrl.getVersionString() }}</div>
+            </div>
+        </div>
+
+        <h2 class="page-header">Tailscale</h2>
+
+        <h3 class="align-right"> 
+            Status: <div class="align-right" ng-if="$ctrl.controllerInfo">{{ $ctrl.getBackendStautsString() }} <a ng-if="$ctrl.controllerInfo.AuthURL" href="{{ $ctrl.controllerInfo.AuthURL }}" target="_blank">{{ $ctrl.controllerInfo.AuthURL }}</a></div>
+            User: <div class="align-right" ng-if="$ctrl.controllerInfo">{{ $ctrl.getBackendUserString() }}</div>
+        </h3>
+
+        <div class="align-right">
+            <button class="btn btn-default" ng-click="$ctrl.doLogin()">Login</button>
+            <button class="btn btn-default" ng-click="$ctrl.doLogout()">Logout</button>
+            <button class="btn btn-default" ng-click="$ctrl.doStart()">Start</button>
+            <button class="btn btn-default" ng-click="$ctrl.doStop()">Stop</button>
+            <button class="btn btn-default" ng-click="$ctrl.doUpdateTlsCert()">Update TLS Cert</button>
+        </div>
+
+        <ul id="tabs" class="nav nav-tabs sub-tabs" data-tabs="tabs">
+            <li class="active"><a data-target="#tailscale-devices" data-toggle="tab">Devices</a></li>
+            <li><a data-target="#tailscale-status" data-toggle="tab">Status</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="tailscale-devices">
+                <page-loading-indicator ng-hide="$ctrl.tailscaleDevices"></page-loading-indicator>
+
+                <tailscale-devices
+                        ng-if="$ctrl.tailscaleDevices"
+                        tailscale-devices="$ctrl.tailscaleDevices"
+                        domoticz-devices="$ctrl.devices"
+                        on-update="$ctrl.fetchtailscaleDevices()"
+                        on-update-domoticz-device="$ctrl.refreshDomoticzDevices()"></tailscale-devices>
+            </div>
+
+            <div class="tab-pane" id="tailscale-status">
+                <tailscale-status />
+            </div>
+        </div>
+    </div>
+
+    <tailscale-fake-devices ng-show="false"></tailscale-fake-devices>
+</script>
+
+<script type="text/ng-template" id="app/tailscale/devices.html">
+    <div class="btn-panel align-right">        
+        <button class="btn btn-default" ng-click="$ctrl.onUpdate()">{{:: 'Refresh' | translate }}</button>
+    </div>
+
+    <tailscale-devices-table
+            devices="$ctrl.tailscaleDevices"
+            on-update="$ctrl.onUpdate()"
+            on-select="$ctrl.selecttailscaleDevice(device)"></tailscale-devices-table>
+
+    <section ng-if="$ctrl.associatedDevices.length > 0">
+        <h2 class="page-header">{{:: 'Devices' | translate }}</h2>
+        <devices-table devices="$ctrl.associatedDevices" on-update="$ctrl.onUpdateDomoticzDevice()"></devices-table>
+    </section>
+</script>
+
+<script type="text/ng-template" id="app/tailscale/tailscaleStatus.html">
+    <page-loading-indicator ng-hide="$ctrl.status"></page-loading-indicator>
+
+    <div class="tailscale-ace-editor js-script-content"></div>
+</script>
+
+<script>
+    require(['../templates/tailscale'], function() {
+        angular.element(document).injector().invoke(function($compile) {
+            var $div = angular.element('<tailscale-plugin></tailscale-plugin>');
+            angular.element('#plugin-view').append($div);
+
+            var scope = angular.element($div).scope();
+            $compile($div)(scope);
+        });
+    });
+</script>
