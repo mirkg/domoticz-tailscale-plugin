@@ -6,7 +6,7 @@
         <p>Manage in Custom plugin page.</p>
     </description>
     <params>
-        <param field="Address" label="tailscale command  wrapper path" width="300px" required="true" default="/opt/domoticz/plugins/tailscale/tailscale.sh"/>
+        <param field="Address" label="tailscale command  wrapper path" width="300px" required="true" default="/opt/domoticz/plugins/tailscale"/>
         <param field="Mode1" label="Track devices status" width="300px">
             <options>
                 <option label="Yes" value="Yes"/>
