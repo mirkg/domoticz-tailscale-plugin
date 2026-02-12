@@ -40,15 +40,20 @@ class Tailscale:
                 domoticz.error('check status failed: ' + traceback.format_exc())
 
     def process_devices(self, status):
-            if  not status['BackendState'] == 'Running':
+            ndev = {'id': 'backend_state', 'name':'BackendState', 'type': 'Text'}
+            if not ndev['id'] in self.ndevices:
+                self.ndevices[ndev['id']] = self.create_domoticz_dev(ndev)
+            self.update_device_string_value(ndev['id'], status['BackendState'])
+
+            if not status['BackendState'] == 'Running':
                 for did in self.ndevices.keys():
-                    self.update_device_value(did, False)            
+                    self.update_device_bool_value(did, False)            
             else:
                 d = status['Self']
                 ndev = {'id': d['ID'], 'name':d['DNSName'], 'type': 'Contact'}
                 if not ndev['id'] in self.ndevices:
                     self.ndevices[ndev['id']] = self.create_domoticz_dev(ndev)
-                self.update_device_value(ndev['id'], d['Online'])
+                self.update_device_bool_value(ndev['id'], d['Online'])
 
                 if 'Peer' in status and status['Peer'] != None:
                     peers = status['Peer']
@@ -56,16 +61,22 @@ class Tailscale:
                         ndev = {'id': peers[peer]['ID'], 'name':peers[peer]['DNSName'], 'type': 'Contact'}
                         if not ndev['id'] in self.ndevices:
                             self.ndevices[ndev['id']] = self.create_domoticz_dev(ndev)
-                        self.update_device_value(ndev['id'], peers[peer]['Online'])
+                        self.update_device_bool_value(ndev['id'], peers[peer]['Online'])
 
-    def update_device_value(self, id, value):
+    def update_device_bool_value(self, id, value):
         dev = self.ndevices[id]
         dev.sValue = ""
         if value:
            dev.nValue = 1
         else:
             dev.nValue = 0
-        dev.Update()        
+        dev.Update()
+    
+    def update_device_string_value(self, id, value):
+        dev = self.ndevices[id]
+        dev.sValue = value
+        dev.nValue = 0
+        dev.Update()
 
     def create_domoticz_dev(self, dev):
         domoticz.debug('creating device: ' + str(dev))
