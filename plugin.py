@@ -1,5 +1,5 @@
 """
-<plugin key="Tailscale" name="Tailscale" version="0.1.0">
+<plugin key="Tailscale" name="Tailscale" version="0.1.1">
     <description>
         <h2>Tailscale Plugin</h2>
         <p>Plugin to add support for <a href="https://tailscale.com/"> Tailscale</a></p>

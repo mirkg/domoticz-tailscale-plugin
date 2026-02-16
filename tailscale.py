@@ -64,19 +64,21 @@ class Tailscale:
                         self.update_device_bool_value(ndev['id'], peers[peer]['Online'])
 
     def update_device_bool_value(self, id, value):
+        if id == 'backend_state':
+            return        
         dev = self.ndevices[id]
         dev.sValue = ""
         if value:
            dev.nValue = 1
         else:
             dev.nValue = 0
-        dev.Update()
+        dev.Update(Log=True)
     
     def update_device_string_value(self, id, value):
         dev = self.ndevices[id]
-        dev.sValue = value
-        dev.nValue = 0
-        dev.Update()
+        dev.sValue = str(value)
+        dev.Update(Log=True)
+        self.ndevices[id] = dev
 
     def create_domoticz_dev(self, dev):
         domoticz.debug('creating device: ' + str(dev))
